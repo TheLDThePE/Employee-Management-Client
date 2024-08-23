@@ -10,8 +10,11 @@
     font-size: 1.1rem;
 }
 
-.text-custom {
+.active-action-btn {
     color:blueviolet;
+    border: none;
+    border-radius: 0;
+    border-bottom: 2px solid blueviolet; 
 }
 
 .auth-page {

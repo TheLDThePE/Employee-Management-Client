@@ -1,21 +1,29 @@
 import React from "react";
-import './Styles/Navbar.css'
+import "./Styles/Navbar.css";
 import profileIcon from "../assets/profile-image.png";
+import profile24 from '../assets/profileIcon-24.png'
 import logoutIcon from "../assets/logout.png";
 import dashboardIcon from "../assets/dashboard.png";
-import attendanceIcon from '../assets/attendance.png'
-import leaveRecordIcon from '../assets/leaveRecord.png'
-import leaveIcon from '../assets/leave.png'
-import employeesIcon from '../assets/employees.png'
-import projectsIcon from '../assets/projects.png'
-import hamIcon from '../assets/hamburger-icon.png'
+import attendanceIcon from "../assets/attendance.png";
+import leaveRecordIcon from "../assets/leaveRecord.png";
+import leaveIcon from "../assets/leave.png";
+import employeesIcon from "../assets/employees.png";
+import projectsIcon from "../assets/projects.png";
+import hamIcon from "../assets/hamburger-icon.png";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setLoggedIn, setToken } from "../Slices/AuthSlice";
 
 const Navbar = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate("/")
+    dispatch(setLoggedIn(false));
+    dispatch(setToken(null));
+    localStorage.setItem("loggedIn",false );
+    localStorage.removeItem("authToken")
+    navigate("/");
   };
 
   return (
@@ -29,14 +37,18 @@ const Navbar = () => {
           aria-controls="offcanvasNavbar"
           aria-label="Toggle navigation"
         >
-                  <span><img src={hamIcon} alt="menus" /></span>
+          <span>
+            <img src={hamIcon} alt="menus" />
+          </span>
         </button>
         <div className="d-flex align-items-center justify-content-center">
-          <div className="btn me-3 fs-5" onClick={handleLogout}>Logout</div>
-          <Link className="navbar-brand" to="#">  
-          <div className="profile-icon">
-            <img src={profileIcon} alt="" />
+          <div className="btn me-3 fs-5" onClick={handleLogout}>
+            Logout
           </div>
+          <Link className="navbar-brand" to="#">
+            <div className="profile-icon">
+              <img src={profileIcon} alt="" />
+            </div>
           </Link>
         </div>
         <div
@@ -59,46 +71,99 @@ const Navbar = () => {
           <div className="offcanvas-body">
             <ul className="navbar-nav align-items-start m-auto justify-content-end flex-grow-1 text-start">
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <Link className="nav-link active" aria-current="page" to="/dashboard">
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  aria-current="page"
+                  to="/dashboard"
+                >
                   <img src={dashboardIcon} alt="logout-icon" className="me-3" />
                   Dashboard
                 </Link>
               </li>
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <Link className="nav-link" to="#">
-                  <img src={attendanceIcon} alt="logout-icon" className="me-3" />
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  to="/myprofile"
+                >
+                  <img src={profile24} alt="logout-icon" className="me-3" />
+                  My Profile
+                </Link>
+              </li>
+              <li className="nav-item mx-2 mb-3 fs-5 col-12">
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  to="/Attendance"
+                >
+                  <img
+                    src={attendanceIcon}
+                    alt="logout-icon"
+                    className="me-3"
+                  />
                   Attendance
                 </Link>
               </li>
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <Link className="nav-link" to="#">
-                  <img src={leaveRecordIcon} alt="logout-icon" className="me-3" />
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  to="LeaveRecords"
+                >
+                  <img
+                    src={leaveRecordIcon}
+                    alt="logout-icon"
+                    className="me-3"
+                  />
                   Leave Records
                 </Link>
               </li>
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <Link className="nav-link" to="/Applyleave">
-                  <img src={leaveIcon} alt="logout-icon" className="me-3"/>
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  to="/Applyleave"
+                >
+                  <img src={leaveIcon} alt="logout-icon" className="me-3" />
                   Apply Leave
                 </Link>
               </li>
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <Link className="nav-link" to="#">
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  to="/Employees"
+                >
                   <img src={employeesIcon} alt="logout-icon" className="me-3" />
                   Employees
                 </Link>
               </li>
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <Link className="nav-link" to="#">
+                <Link
+                  className={`nav-link ${(isActive) => {
+                    isActive ? "btn-custom" : "";
+                  }}`}
+                  to="/Projects"
+                >
                   <img src={projectsIcon} alt="logout-icon" className="me-3" />
                   Projects
                 </Link>
               </li>
               <li className="nav-item mx-2 mb-3 fs-5 col-12">
-                <div className="nav-link" to="#" onClick={handleLogout}>
+                <button
+                  className="nav-link col-12 text-start"
+                  onClick={handleLogout}
+                >
                   <img src={logoutIcon} alt="logout-icon" className="me-3" />
                   Logout
-                </div>
+                </button>
               </li>
             </ul>
           </div>

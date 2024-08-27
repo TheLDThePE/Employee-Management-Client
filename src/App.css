@@ -6,3 +6,8 @@
 .icon {
   height: 35px;
 }
+
+.Toastify {
+  z-index: 9999;
+}
+

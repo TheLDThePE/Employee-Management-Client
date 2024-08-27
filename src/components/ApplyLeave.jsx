@@ -44,18 +44,6 @@ const ApplyLeave = () => {
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable
-        pauseOnHover
-        theme="colored"
-      ></ToastContainer>
       <div className="container px-4 my-5 d-md-flex">
         <div className="col col-md-6 col-lg-4 border">
           <p className="px-2">Applying Leave</p>

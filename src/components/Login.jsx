@@ -1,13 +1,22 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import React from "react";
+import React, { useState } from "react";
 import "./Styles/Auth.css";
 import emailicon from "../assets/email.png";
 import passwordicon from "../assets/password.png";
 import { Navigate, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import ButtonLoader from "./Loaders/ButtonLoader";
+import { useDispatch } from "react-redux";
+import { setLoggedIn, setToken } from "../Slices/AuthSlice";
 
 const Login = () => {
+  const axiosBaseURL = "http://localhost:4000/api";
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const initialValues = {
     email: "",
     password: "",
@@ -20,11 +29,64 @@ const Login = () => {
       .required("Password is required"),
   });
 
-  const handleLogin = (values) => {
+  const handleLogin = async (values) => {
     try {
-      navigate("/dashboard");
+      setLoading(true);
+
+      const options = {
+        email: values.email.trim(),
+        password: values.password.trim(),
+      };
+
+      const res = await axios.post(`${axiosBaseURL}/user/login`, options, {
+        validateStatus: (status) => {
+          return status < 500; //Reject only if the status code is greater than or equal to 500
+        },
+      });
+
+      if (res.status === 200) {
+        dispatch(setLoggedIn(true));
+        localStorage.setItem("loggedIn", true);
+        dispatch(setToken(res.data.token));
+        localStorage.setItem("authToken", res.data.token);
+        toast.success("Login successful", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        setLoading(false);
+        navigate("/dashboard");
+      } else {
+        setLoading(false);
+        setError(res.data.message || "An error occurred");
+        toast.error(error || "An error occurred", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: 0,
+          theme: "colored",
+        });
+      }
     } catch (error) {
       console.log(error);
+      setLoading(false);
+      setError("A network error occurred. Please try again.");
+      toast.error("A network error occurred. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: 0,
+        theme: "colored",
+      });
     }
   };
 
@@ -74,9 +136,9 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="col-4 align-self-center btn btn-custom my-2 fs-5"
+            className="col-4 align-self-center btn btn-custom my-2"
           >
-            Login
+            {loading ? <ButtonLoader /> : <p className="fs-5 m-0">Login</p>}
           </button>
         </Form>
       </Formik>

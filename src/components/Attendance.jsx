@@ -1,8 +1,9 @@
 import React from 'react'
+import MarkAttendanceCard from './MarkAttendanceCard'
 
 const Attendance = () => {
   return (
-    <div>Attendance</div>
+    <MarkAttendanceCard />
   )
 }
 

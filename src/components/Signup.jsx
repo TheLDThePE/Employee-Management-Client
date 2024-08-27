@@ -1,12 +1,16 @@
 import * as Yup from "yup";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import emailicon from "../assets/email.png";
 import passwordicon from "../assets/password.png";
 import usernameicon from "../assets/username.png";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const Signup = () => {
+  const [loading, setLoading] = useState(false);
+  const axiosBaseURL = "http://localhost:4000/api";
   const initialValues = {
     username: "",
     email: "",
@@ -14,6 +18,9 @@ const Signup = () => {
   };
 
   const validationSchema = Yup.object().shape({
+    username: Yup.string()
+      .min(3, "Username must be at least 3 characters")
+      .required("Username is required"),
     email: Yup.string().email("Invalid email").required("Email is required"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
@@ -22,12 +29,60 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  const handleSignup = (values) => {
+  const handleSignup = async (values, { resetForm }) => {
     try {
-      navigate("/");
-      console.log(values);
+      setLoading(true);
+
+      const options = {
+        name: values.username.trim(),
+        email: values.email.trim(),
+        password: values.password.trim(),
+      };
+
+      const response = await axios.post(`${axiosBaseURL}/user/register`, options, {
+        validateStatus: (status) => {
+          return status < 500; //Reject only if the status code is greater than or equal to 500
+        }
+      });
+
+      console.log(response);
+
+      if (response.status === 200) {
+        toast.success("user registered successfully, proceed to Login", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          pauseOnHover: false,
+          draggable: true,
+          proggress: 1,
+          theme: "colored",
+          transistion: "slide",
+        });
+        resetForm();
+        setLoading(false)
+      } else {
+        setLoading(false)
+        toast.error(response.data.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: 0,
+          theme: "colored",
+        });
+      }
     } catch (error) {
-      console.log(error);
+      setLoading(false)
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: 0,
+        theme: "colored",
+      });
     }
   };
 
@@ -94,11 +149,7 @@ const Signup = () => {
             ></ErrorMessage>
           </div>
           <div className="col-12 my-4 fs-5 d-flex justify-content-center align-items-baseline">
-              <Field
-              type="checkbox"
-              className="me-2"
-                name="checkbox"
-              ></Field>
+            <Field type="checkbox" className="me-2" name="checkbox"></Field>
             <div>Register me as Admin</div>
           </div>
           <button

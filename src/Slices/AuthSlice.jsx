@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
   initialState: {
+    swipedIn: false,
     loggedIn: false,
     token: "",
     user: {},
@@ -10,6 +11,9 @@ const authSlice = createSlice({
   reducers: {
     setLoggedIn: (state, action) => {
       state.loggedIn = action.payload;
+    },
+    setSwipedIn: () => {
+      state.swipedIn = action.payload;
     },
     setToken: (state, action) => {
       state.token = action.payload;

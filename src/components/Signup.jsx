@@ -1,7 +1,6 @@
 import * as Yup from "yup";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import emailicon from "../assets/email.png";
 import passwordicon from "../assets/password.png";
 import usernameicon from "../assets/username.png";
@@ -27,8 +26,6 @@ const Signup = () => {
       .required("Password is required"),
   });
 
-  const navigate = useNavigate();
-
   const handleSignup = async (values, { resetForm }) => {
     try {
       setLoading(true);
@@ -47,7 +44,7 @@ const Signup = () => {
 
       console.log(response);
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         toast.success("user registered successfully, proceed to Login", {
           position: "top-right",
           autoClose: 5000,

@@ -22,7 +22,9 @@ const Navbar = () => {
     dispatch(setLoggedIn(false));
     dispatch(setToken(null));
     localStorage.setItem("loggedIn",false );
-    localStorage.removeItem("authToken")
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("totalTime");
+    localStorage.removeItem("swipedIn");
     navigate("/");
   };
 

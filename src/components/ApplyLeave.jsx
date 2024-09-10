@@ -4,19 +4,10 @@ import * as Yup from "yup";
 import LeaveRecords from "./LeaveRecords";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const ApplyLeave = () => {
-  const appliedToast = () =>
-    toast.success("Leave Applied Successfully", {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored"
-    });
+  const axiosBaseURL = "http://localhost:4000/api";
 
   const initialValues = {
     leaveType: "",
@@ -32,12 +23,60 @@ const ApplyLeave = () => {
     toDate: Yup.date().required("to date required"),
   });
 
-  const handleSubmit = (values, { resetForm }) => {
+  const handleSubmit = async (values, { resetForm }) => {
     try {
-      console.log(values);
-      resetForm();
-      appliedToast();
+      const options = {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        }
+      };
+      const data = {
+        "startDate": values.fromDate,
+        "endDate": values.toDate,
+        "leaveType": values.leaveType,
+        "reason": values.reason
+      }
+      const response = await axios.post(
+        `${axiosBaseURL}/user/attendance/applyleave`,
+        data,
+        options
+      );
+      if (response.status == 200) {
+        toast.success("Leave Applied Successfully", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        resetForm();
+      } else {
+        toast.error(response.data.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      }
     } catch (error) {
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
       console.log(error);
     }
   };
@@ -72,10 +111,10 @@ const ApplyLeave = () => {
                     select an option
                   </option>
                   <option value="WFH">Work From Home</option>
-                  <option value="onDuty">On Duty</option>
-                  <option value="privilege">Privilege</option>
-                  <option value="casualLeave">Casual Leave</option>
-                  <option value="maternityLeave">Maternity Leave</option>
+                  <option value="On Duty">On Duty</option>
+                  <option value="Privilege">Privilege</option>
+                  <option value="Casual">Casual Leave</option>
+                  <option value="Maternity">Maternity Leave</option>
                 </Field>
                 <ErrorMessage
                   name="leaveType"
@@ -135,7 +174,7 @@ const ApplyLeave = () => {
             </Form>
           </Formik>
         </div>
-        <div>
+        <div className="col col-md-6 col-lg-8 border">
           <LeaveRecords />
         </div>
       </div>

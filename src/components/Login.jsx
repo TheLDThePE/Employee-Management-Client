@@ -29,6 +29,28 @@ const Login = () => {
       .required("Password is required"),
   });
 
+  const setSwipeStatus = async (token) => {
+    try {
+      const options = {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "" },
+      };
+      const swipeResponse = await axios.post(
+        `${axiosBaseURL}/user/attendance/swipestatus`,
+        {},
+        options
+      );
+
+      const swipedInStatus = swipeResponse.data.swipedIn;
+      const totalTime = swipeResponse.data.totalTime || 0;
+      localStorage.setItem("totalTime",totalTime);
+      localStorage.setItem("swipedIn", JSON.stringify(swipedInStatus));
+      dispatch(setSwipedIn(JSON.stringify(swipedInStatus)));
+      console.log(localStorage.getItem("swipedIn"));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleLogin = async (values) => {
     try {
       setLoading(true);
@@ -56,8 +78,9 @@ const Login = () => {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          progress: undefined
+          progress: undefined,
         });
+        await setSwipeStatus(res.data.token); // await used because it's an async function that involves an api call
         setLoading(false);
         navigate("/dashboard");
       } else {

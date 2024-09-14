@@ -9,7 +9,8 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import ButtonLoader from "./Loaders/ButtonLoader";
 import { useDispatch } from "react-redux";
-import { setLoggedIn, setToken } from "../Slices/AuthSlice";
+import { setLoggedIn, setToken, setSwipedIn } from "../Slices/AuthSlice";
+import { setEmployee } from "../Slices/EmployeeSlice";
 
 const Login = () => {
   const axiosBaseURL = "http://localhost:4000/api";
@@ -51,6 +52,25 @@ const Login = () => {
     }
   };
 
+  const fetchEmployee = async () => {
+    try {
+      const options = {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await axios.get(
+        `http://localhost:4000/api/user/getemployee`,
+        options
+      );
+      dispatch(setEmployee(response.data.employee));
+      console.log(employee);
+    } catch (error) {
+      console.error("Error fetching employee:", error);
+    }
+  };
+
   const handleLogin = async (values) => {
     try {
       setLoading(true);
@@ -81,6 +101,7 @@ const Login = () => {
           progress: undefined,
         });
         await setSwipeStatus(res.data.token); // await used because it's an async function that involves an api call
+        await fetchEmployee();
         setLoading(false);
         navigate("/dashboard");
       } else {

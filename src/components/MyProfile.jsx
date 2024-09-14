@@ -6,6 +6,14 @@ import profileIcon from "../assets/username.png";
 import "./Styles/MyProfile.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setProfilePicture, setEmployee } from "../Slices/EmployeeSlice.jsx";
+import userNameIcon from "../assets/employeeDetailsIcons/userName-icon.png";
+import emailIcon from "../assets/employeeDetailsIcons/emailIcon.png";
+import phoneIcon from "../assets/employeeDetailsIcons/phoneIcon.png";
+import addressIcon from "../assets/employeeDetailsIcons/addressIcon.png";
+import stateIcon from "../assets/employeeDetailsIcons/stateIcon.png";
+import cityIcon from "../assets/employeeDetailsIcons/cityIcon.png";
+import countryIcon from "../assets/employeeDetailsIcons/countryIcon.png";
+import designationIcon from "../assets/employeeDetailsIcons/designationIcon.png";
 
 const EmployeeForm = () => {
   const dispatch = useDispatch();
@@ -16,10 +24,17 @@ const EmployeeForm = () => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
-    email: Yup.string().email("Invalid email format").required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
     phone: Yup.string().min(10, "Must be at least 10 characters").nullable(),
-    address: Yup.string().nullable(),
-    role: Yup.string().oneOf(["employee", "manager", "admin"], "Invalid role"),
+    address: Yup.object().shape({
+      addressLine: Yup.string().nullable(),
+      city: Yup.string().nullable(),
+      state: Yup.string().nullable(),
+      country: Yup.string().nullable(),
+    }),
+    role: Yup.string().oneOf(["employee", "admin"], "Invalid role"),
   });
 
   const handleFormSubmit = async (values, { setSubmitting }) => {
@@ -75,8 +90,13 @@ const EmployeeForm = () => {
             "Content-Type": "application/json",
           },
         };
-        const response = await axios.get(`http://localhost:4000/api/user/getemployee`, options);
-        dispatch(setEmployee(response.data.employee));
+        const response = await axios.get(
+          `http://localhost:4000/api/user/getemployee`,
+          options
+        );
+        console.log(response.data.user);
+        dispatch(setEmployee(response.data.user));
+        console.log(employee);
       } catch (error) {
         console.error("Error fetching employee:", error);
       }
@@ -87,31 +107,33 @@ const EmployeeForm = () => {
 
   return (
     <div className="container">
-      <h2>{editing ? "Edit Employee" : "Employee Details"}</h2>
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <button className="btn btn-primary" onClick={() => setEditing(!editing)}>
-          {editing ? "Cancel" : "Edit"}
-        </button>
-      </div>
-      <div className="container d-flex flex-column flex-md-row align-items-center align-items-md-start justify-content-start">
+      <h2>Edit Employee</h2>
+      <div className="container d-flex gap-3 flex-column flex-md-row align-items-center align-items-md-start justify-content-start">
         <form
           onSubmit={handleImageUpload}
-          className="my-4 col-md-2 d-flex flex-column align-items-center justify-content-center"
+          className="my-4 col-12 col-md-2 d-flex flex-column align-items-center justify-content-center"
         >
-          <label htmlFor="file-upload" className="custom-file-upload mb-3">
-            <img src={profilePicture || profileIcon} alt="Profile" />
+          <label htmlFor="file-upload" className="custom-file-upload">
+            <img src={profilePicture || profileIcon} alt="" />
           </label>
 
           <input
             type="file"
+            label="Image"
+            name="myFile"
             id="file-upload"
             accept=".jpeg, .png, .jpg"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="form-control"
+            onChange={(e) => dispatch(setProfilePicture(e.target.files[0]))}
           />
 
-          <button type="submit" className="btn btn-custom mt-2">
-            Upload
+          <button
+            type="submit"
+            className="col btn btn-custom my-3 "
+            onClick={() => {
+              handleImageUpload;
+            }}
+          >
+            update
           </button>
         </form>
 
@@ -121,7 +143,12 @@ const EmployeeForm = () => {
               name: employee?.name || "",
               email: employee?.email || "",
               phone: employee?.phone || "",
-              address: employee?.address || "",
+              address: {
+                addressLine: employee?.address?.addressLine || "",
+                city: employee?.address?.city || "",
+                state: employee?.address?.state || "",
+                country: employee?.address?.country || "",
+              },
               role: employee?.role || "employee",
             }}
             validationSchema={validationSchema}
@@ -132,69 +159,176 @@ const EmployeeForm = () => {
                 <div className="form-group">
                   <label htmlFor="name">Name</label>
                   <Field type="text" name="name" className="form-control" />
-                  <ErrorMessage name="name" component="div" className="text-danger" />
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="text-danger"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="email">Email</label>
                   <Field type="email" name="email" className="form-control" />
-                  <ErrorMessage name="email" component="div" className="text-danger" />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-danger"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="phone">Phone</label>
                   <Field type="text" name="phone" className="form-control" />
-                  <ErrorMessage name="phone" component="div" className="text-danger" />
+                  <ErrorMessage
+                    name="phone"
+                    component="div"
+                    className="text-danger"
+                  />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="address">Address</label>
-                  <Field type="text" name="address" className="form-control" />
-                  <ErrorMessage name="address" component="div" className="text-danger" />
+                  <label htmlFor="addressLine">Address Line</label>
+                  <Field
+                    type="text"
+                    name="address.addressLine"
+                    className="form-control"
+                  />
+                  <ErrorMessage
+                    name="address.addressLine"
+                    component="div"
+                    className="text-danger"
+                  />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="role">Role</label>
-                  <Field as="select" name="role" className="form-control">
-                    <option value="employee">Employee</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                  </Field>
-                  <ErrorMessage name="role" component="div" className="text-danger" />
+                  <label htmlFor="city">City</label>
+                  <Field
+                    type="text"
+                    name="address.city"
+                    className="form-control"
+                  />
+                  <ErrorMessage
+                    name="address.city"
+                    component="div"
+                    className="text-danger"
+                  />
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-custom mt-3 fw-light align-self-center"
-                  disabled={isSubmitting}
-                >
-                  Update
-                </button>
+                <div className="form-group">
+                  <label htmlFor="state">State</label>
+                  <Field
+                    type="text"
+                    name="address.state"
+                    className="form-control"
+                  />
+                  <ErrorMessage
+                    name="address.state"
+                    component="div"
+                    className="text-danger"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="country">Country</label>
+                  <Field
+                    type="text"
+                    name="address.country"
+                    className="form-control"
+                  />
+                  <ErrorMessage
+                    name="address.country"
+                    component="div"
+                    className="text-danger"
+                  />
+                </div>
+
+                <div className="d-flex justify-content-center gap-5">
+                  <button
+                    type="submit"
+                    className="btn btn-custom mt-3 align-self-center"
+                    disabled={isSubmitting}
+                  >
+                    save
+                  </button>
+                  <button
+                    className="btn btn-danger mt-3 align-self-center"
+                    onClick={() => {
+                      setEditing(false);
+                    }}
+                  >
+                    cancel
+                  </button>
+                </div>
               </Form>
             )}
           </Formik>
         ) : (
-          // Display employee details
-          <div className="col-12 col-md-10">
-            <div className="mb-3 col-12 d-flex">
-              <strong className="col-4">Name: </strong>
-              <div className={employee?.name ? "" : "text-muted col-8"}>{employee?.name || "N/A"}</div>
+          <div className="col-12 col-md-10 d-flex flex-column my-5 my-sm-4">
+            <div className="d-flex align-items-center justify-content-between mb-4">
+              <div className="fs-1">Employee Details</div>
+              <div
+                className="btn btn-custom col-4 fs-5"
+                onClick={() => setEditing(true)}
+              >
+                edit
+              </div>
             </div>
-            <div className="mb-3 col-12 d-flex">
-              <strong className="col-4">Email: </strong>
-              <div className={employee?.email ? "" : "text-muted col-8"}>{employee?.email || "N/A"}</div>
-            </div>
-            <div className="mb-3 col-12 d-flex">
-              <strong className="col-4">Phone: </strong>
-              <div className={employee?.phone ? "" : "text-muted col-8"}>{employee?.phone || "N/A"}</div>
-            </div>
-            <div className="mb-3 col-12 d-flex">
-              <strong className="col-4">Address: </strong>
-              <div className={employee?.address ? "" : "text-muted col-8"}>{employee?.address || "N/A"}</div>
-            </div>
-            <div className="mb-3 col-12 d-flex">
-              <strong className="col-4">Role: </strong>
-              <div className={employee?.role ? "" : "text-muted col-8"}>{employee?.role || "N/A"}</div>
+            <div className="row d-flex flex-column flex-md-row">
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={userNameIcon} alt="username input" />
+                </label>
+                <p className="fs-4">{employee?.name || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={emailIcon} alt="email input" />
+                </label>
+                <p className="fs-4">{employee?.email || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={phoneIcon} alt="mobile number input" />
+                </label>
+                <p className="fs-4">{employee?.phone || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={addressIcon} alt="address Line input" />
+                </label>
+                <p className="fs-4">{employee?.address?.addressLine || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={cityIcon} alt="city input" />
+                </label>
+                <p className="fs-4">{employee?.address?.city || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={stateIcon} alt="state" />
+                </label>
+                <p className="fs-4">{employee?.address?.state || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={countryIcon} alt="country" />
+                </label>
+                <p className="fs-4">{employee?.address?.country || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-sm-6 form-group d-flex">
+                <label className="muted col-2">
+                  <img src={designationIcon} alt="designation" />
+                </label>
+                <p className="fs-4">{employee?.designation || "N/A"}</p>
+              </div>
             </div>
           </div>
         )}

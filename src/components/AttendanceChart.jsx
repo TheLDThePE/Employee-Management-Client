@@ -35,7 +35,7 @@ const AttendanceChart = ({ height }) => {
 
         // Process the data after awaiting the result
         const attendanceData = attendanceResponse.data;
-        const chartData = attendanceData.map((record) => {
+        const chartData = attendanceData.reverse().map((record) => {
           return {
             date: new Date(record.date).toLocaleDateString(),
             hoursWorked: record.attendance.length === 0 ? 0 : (

@@ -14,6 +14,7 @@ import stateIcon from "../assets/employeeDetailsIcons/stateIcon.png";
 import cityIcon from "../assets/employeeDetailsIcons/cityIcon.png";
 import countryIcon from "../assets/employeeDetailsIcons/countryIcon.png";
 import designationIcon from "../assets/employeeDetailsIcons/designationIcon.png";
+import { toast } from "react-toastify";
 
 const EmployeeForm = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,9 @@ const EmployeeForm = () => {
   const employee = useSelector((state) => state.employee.employee);
   const profilePicture = useSelector((state) => state.employee.profilePicture);
   const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(profilePicture);
+  const [isUploading, setIsUploading] = useState(false);
+  const axiosBaseURL = "http://localhost:4000/api";
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -39,18 +43,41 @@ const EmployeeForm = () => {
 
   const handleFormSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/employee/${employee._id}`,
-        values,
+      console.log(values);
+      const userDetails = {
+        user: {
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          address: {
+            addressLine: values.address.addressLine,
+            city: values.address.city,
+            state: values.address.state,
+            country: values.address.country,
+          },
+        },
+      };
+      const response = await axios.post(
+        `${axiosBaseURL}/user/updateemployee`,
+        userDetails,
         {
           headers: {
             authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         }
       );
-      alert("Employee details updated successfully");
       dispatch(setEmployee(response.data.employee)); // Update Redux state
       setEditing(false); // Exit edit mode
+      toast.success("Profile updated Successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     } catch (error) {
       console.error("Error updating employee:", error);
     } finally {
@@ -58,28 +85,108 @@ const EmployeeForm = () => {
     }
   };
 
-  const handleImageUpload = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("profilePicture", file);
-
+  const fetchProfilePicture = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/employee/${employee._id}/upload`,
-        formData,
-        {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+      const options = {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        responseType: "blob",
+      };
+
+      const response = await axios.get(
+        `${axiosBaseURL}/user/getprofilepicture`,
+        options
       );
-      alert("Profile picture updated successfully");
-      dispatch(setProfilePicture(response.data.profilePicture)); // Update profile picture in Redux state
+
+      // Log response data to check if it's a Blob
+      console.log("Response data:", response.data);
+      console.log("Is Blob:", response.data instanceof Blob); // Check if it is a Blob
+
+      if (response.data instanceof Blob) {
+        const imageUrl = URL.createObjectURL(response.data);
+        dispatch(setProfilePicture(imageUrl));
+      } else {
+        console.error("Error: Response is not a Blob");
+      }
     } catch (error) {
-      console.error("Error uploading profile picture:", error);
+      console.error("Error fetching profile picture:", error);
     }
   };
+
+  const handleImageChange = (e) => {
+    setFile(e.target.files[0]); // Update the selected file
+  };
+
+  const handleImageUpload = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      toast.error("Please select an image to upload.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    console.log(file);
+    formData.append("image", file); // Append the file to form data
+
+    try {
+      const options = {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      // Send the POST request to upload the image
+      const response = await axios.post(
+        `${axiosBaseURL}/user/uploadprofilepicture`,
+        formData,
+        options
+      );
+
+      if (response.status === 200) {
+        // Fetch the updated profile picture immediately after upload
+        try {
+          fetchProfilePicture();
+        }
+        catch (error) {
+          toast.error("Failed to upload profile picture", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+          
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      toast.error("Failed to upload profile picture.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
 
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -91,7 +198,7 @@ const EmployeeForm = () => {
           },
         };
         const response = await axios.get(
-          `http://localhost:4000/api/user/getemployee`,
+          `${axiosBaseURL}user/getemployee`,
           options
         );
         console.log(response.data.user);
@@ -102,8 +209,9 @@ const EmployeeForm = () => {
       }
     };
 
+    fetchProfilePicture();
     fetchEmployee();
-  }, [dispatch]);
+  }, [dispatch, editing, isUploading]);
 
   return (
     <div className="container">
@@ -114,7 +222,11 @@ const EmployeeForm = () => {
           className="my-4 col-12 col-md-2 d-flex flex-column align-items-center justify-content-center"
         >
           <label htmlFor="file-upload" className="custom-file-upload">
-            <img src={profilePicture || profileIcon} alt="" />
+            <img
+              src={profilePicture || profileIcon}
+              alt=""
+              className={profilePicture ? "profile-picture" : ""}
+            />
           </label>
 
           <input
@@ -123,16 +235,10 @@ const EmployeeForm = () => {
             name="myFile"
             id="file-upload"
             accept=".jpeg, .png, .jpg"
-            onChange={(e) => dispatch(setProfilePicture(e.target.files[0]))}
+            onChange={handleImageChange}
           />
 
-          <button
-            type="submit"
-            className="col btn btn-custom my-3 "
-            onClick={() => {
-              handleImageUpload;
-            }}
-          >
+          <button type="submit" className="col btn btn-custom my-3 ">
             update
           </button>
         </form>
@@ -149,7 +255,6 @@ const EmployeeForm = () => {
                 state: employee?.address?.state || "",
                 country: employee?.address?.country || "",
               },
-              role: employee?.role || "employee",
             }}
             validationSchema={validationSchema}
             onSubmit={handleFormSubmit}
@@ -299,7 +404,9 @@ const EmployeeForm = () => {
                 <label className="muted col-2">
                   <img src={addressIcon} alt="address Line input" />
                 </label>
-                <p className="fs-4">{employee?.address?.addressLine || "N/A"}</p>
+                <p className="fs-4">
+                  {employee?.address?.addressLine || "N/A"}
+                </p>
               </div>
 
               <div className="col-12 col-sm-6 form-group d-flex">

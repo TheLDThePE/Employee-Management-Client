@@ -43,7 +43,7 @@ const Login = () => {
 
       const swipedInStatus = swipeResponse.data.swipedIn;
       const totalTime = swipeResponse.data.totalTime || 0;
-      localStorage.setItem("totalTime",totalTime);
+      localStorage.setItem("totalTime", totalTime);
       localStorage.setItem("swipedIn", JSON.stringify(swipedInStatus));
       dispatch(setSwipedIn(JSON.stringify(swipedInStatus)));
       console.log(localStorage.getItem("swipedIn"));
@@ -69,6 +69,14 @@ const Login = () => {
     } catch (error) {
       console.error("Error fetching employee:", error);
     }
+  };
+
+  const handleGuestLogin = async () => {
+    const guestCredentials = {
+      email: "mukeshkj2912@gmail.com",
+      password: "Mukesh@123",
+    };
+    await handleLogin(guestCredentials);
   };
 
   const handleLogin = async (values) => {
@@ -178,12 +186,25 @@ const Login = () => {
               className="text-danger"
             ></ErrorMessage>
           </div>
-          <button
-            type="submit"
-            className="col-4 align-self-center btn btn-custom my-2"
-          >
-            {loading ? <ButtonLoader /> : <p className="fs-5 m-0">Login</p>}
-          </button>
+          <div className="col-12 d-flex justify-content-center gap-4 align-items-center">
+            <button
+              type="submit"
+              className="col-4 align-self-center btn btn-custom my-2"
+            >
+              {loading ? <ButtonLoader /> : <p className="fs-5 m-0">Login</p>}
+            </button>
+            <button
+              type="button"
+              className="col-4 align-self-center btn btn-custom my-2"
+              onClick={handleGuestLogin}
+            >
+              {loading ? (
+                <ButtonLoader />
+              ) : (
+                <p className="fs-5 m-0">Demo</p>
+              )}
+            </button>
+          </div>
         </Form>
       </Formik>
     </>

@@ -1,7 +1,8 @@
-import React from "react";
+import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
 import "./Styles/Navbar.css";
 import profileIcon from "../assets/profile-image.png";
-import profile24 from '../assets/profileIcon-24.png'
+import profile24 from "../assets/profileIcon-24.png";
 import logoutIcon from "../assets/logout.png";
 import dashboardIcon from "../assets/dashboard.png";
 import attendanceIcon from "../assets/attendance.png";
@@ -13,20 +14,64 @@ import hamIcon from "../assets/hamburger-icon.png";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoggedIn, setToken } from "../Slices/AuthSlice";
+import { setProfilePicture } from "../Slices/EmployeeSlice";
+import axios from "axios";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const profilePicture = useSelector((state) => state.employee.profilePicture);
+  const axiosBaseURL = "http://localhost:4000/api"
 
   const handleLogout = () => {
     dispatch(setLoggedIn(false));
     dispatch(setToken(null));
-    localStorage.setItem("loggedIn",false );
+    localStorage.setItem("loggedIn", false);
     localStorage.removeItem("authToken");
     localStorage.removeItem("totalTime");
     localStorage.removeItem("swipedIn");
     navigate("/");
   };
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const options = {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          responseType: "blob",
+        };
+
+        const response = await axios.get(
+          `${axiosBaseURL}/user/getprofilepicture`,
+          options
+        );
+
+        // Log response data to check if it's a Blob
+        console.log("Response data:", response.data);
+        console.log("Is Blob:", response.data instanceof Blob); // Check if it is a Blob
+
+        if (response.data instanceof Blob) {
+          const imageUrl = URL.createObjectURL(response.data);
+          dispatch(setProfilePicture(imageUrl));
+        } else {
+          console.error("Error: Response is not a Blob");
+        }
+      } catch (error) {
+        console.error("Error fetching profile picture:", error);
+      }
+    };
+    fetchProfilePicture();
+
+    // Cleanup function to revoke the object URL
+    console.log(profilePicture);
+    return () => {
+      if (profilePicture) {
+        URL.revokeObjectURL(profilePicture);
+      }
+    };
+  }, [dispatch]);
 
   return (
     <nav className="navbar bg-body-tertiary sticky-top">
@@ -47,9 +92,9 @@ const Navbar = () => {
           <div className="btn me-3 fs-5" onClick={handleLogout}>
             Logout
           </div>
-          <Link className="navbar-brand" to="#">
+          <Link className="navbar-brand" to="/myprofile">
             <div className="profile-icon">
-              <img src={profileIcon} alt="" />
+              <img src={profileIcon} alt="" className={setProfilePicture} />
             </div>
           </Link>
         </div>

@@ -138,14 +138,6 @@ const LeaveRecords = () => {
                             <strong>End Date:</strong> {endDate.toDateString()}
                           </p>
                         </div>
-                        {canCancel && (
-                          <button
-                            className="btn btn-danger mt-3 align-self-end justify-content-end border"
-                            onClick={() => cancelLeave(leave._id.$oid)}
-                          >
-                            Cancel
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>

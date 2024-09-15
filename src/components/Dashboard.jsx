@@ -2,8 +2,10 @@ import React from "react";
 import Displaycards from "./Displaycards.jsx";
 import MarkAttendanceCard from "./MarkAttendanceCard.jsx";
 import AttendanceChart from "./AttendanceChart.jsx";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
+
   return (
     <>
       <Displaycards />

@@ -84,8 +84,8 @@ const ApplyLeave = () => {
   return (
     <>
       <div className="container px-4 my-5 d-md-flex">
-        <div className="col col-md-6 col-lg-4 border">
-          <p className="px-2">Applying Leave</p>
+        <div className="col col-md-6 col-lg-4">
+          <p className="px-2 mb-4 fw-bold text-center">Applying Leave</p>
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -174,7 +174,8 @@ const ApplyLeave = () => {
             </Form>
           </Formik>
         </div>
-        <div className="col col-md-6 col-lg-8 border">
+        <div className="col col-md-6 col-lg-8">
+          <p className="fw-bold fs-5 mb-0 text-center">LEAVE RECORDS</p>
           <LeaveRecords />
         </div>
       </div>

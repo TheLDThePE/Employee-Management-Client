@@ -1,6 +1,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "./Styles/Attendance.css"
+import noRecordsIcon from "../assets/noRecords.jpg";
 import {
   BarChart,
   Bar,
@@ -16,6 +18,7 @@ import {
 
 const AttendanceChart = ({ height }) => {
   const [attendanceRecord, setAttendanceRecord] = useState([]);
+  const [noRecordsAvailable, setNoRecordsAvailable] = useState(false);
 
   useEffect(() => {
     const getAttendanceRecord = async () => {
@@ -38,15 +41,23 @@ const AttendanceChart = ({ height }) => {
         const chartData = attendanceData.reverse().map((record) => {
           return {
             date: new Date(record.date).toLocaleDateString(),
-            hoursWorked: record.attendance.length === 0 ? 0 : (
-              record.attendance[0].totalTime /
-              (1000 * 60 * 60)
-            ).toFixed(2),
+            hoursWorked:
+              record.attendance.length === 0
+                ? 0
+                : (record.attendance[0].totalTime / (1000 * 60 * 60)).toFixed(
+                    2
+                  ),
           };
         });
         console.log(chartData);
 
-        setAttendanceRecord(chartData);
+        const allZeros = chartData.every((entry) => entry.hoursWorked === 0.0);
+
+        if (allZeros) {
+          setNoRecordsAvailable(true); // State to track no records available
+        } else {
+          setAttendanceRecord(chartData);
+        }
       } catch (error) {
         console.error("Error fetching attendance record:", error);
       }
@@ -54,7 +65,19 @@ const AttendanceChart = ({ height }) => {
 
     getAttendanceRecord();
   }, []);
-  return (
+
+  return noRecordsAvailable ? (
+    <>
+      <div className="text-center">
+        <img
+          src={noRecordsIcon}
+          alt="No records Available"
+          className="no-records-icon"
+        />
+        <p className="lead">No Attendance Records available for the given period or employee</p>
+      </div>
+    </>
+  ) : (
     <>
       <ResponsiveContainer width="100%" height={height}>
         <BarChart

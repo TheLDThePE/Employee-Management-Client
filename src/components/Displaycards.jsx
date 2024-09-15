@@ -6,6 +6,7 @@ import userdisplay from '../assets/user-display-grad.png';
 import projectsdisplay from '../assets/projects-display-grad.png';
 import pendingdisplay from '../assets/pending-display-grad.png';
 import leavedisplay from '../assets/leave-display-grad.png';
+import { Link } from 'react-router-dom';
 
 const Displaycards = () => {
   const [stats, setStats] = useState({
@@ -79,7 +80,9 @@ const Displaycards = () => {
             <div className="d-flex justify-content-between align-items-center">
               <div className="card-body d-flex flex-column justify-content-between align-items-center">
                 <h4 className="card-title text-dark">PROFILE</h4>
-                <h6>{"update now ->"}</h6>
+                <h6>
+                  <Link to="/myprofile">Update Profile</Link>
+                </h6>
               </div>
               <div className="col-4">
                 <img src={userdisplay} alt="" />

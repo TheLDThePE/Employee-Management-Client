@@ -14,11 +14,12 @@ const Displaycards = () => {
     pending: 0,
     daysOff: 0
   });
+  const axiosBaseURL= "https://employee-management-server-f7k2.onrender.com/api"
 
   // Fetch dashboard stats
   const fetchDashboardStats = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/user/getdashboardstats', {
+      const response = await axios.get(`${axiosBaseURL}/user/getdashboardstats`, {
         headers: {
           authorization: `Bearer ${localStorage.getItem('authToken')}`, // Add token if required
         },

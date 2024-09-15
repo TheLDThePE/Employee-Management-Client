@@ -19,6 +19,7 @@ import {
 const AttendanceChart = ({ height }) => {
   const [attendanceRecord, setAttendanceRecord] = useState([]);
   const [noRecordsAvailable, setNoRecordsAvailable] = useState(false);
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api"
 
   useEffect(() => {
     const getAttendanceRecord = async () => {
@@ -31,7 +32,7 @@ const AttendanceChart = ({ height }) => {
         };
 
         const attendanceResponse = await axios.post(
-          `http://localhost:4000/api/user/attendance/attendancerecord`,
+          `${axiosBaseURL}/user/attendance/attendancerecord`,
           {}, // If no data is required in the body
           options
         );

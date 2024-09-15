@@ -24,7 +24,7 @@ const EmployeeForm = () => {
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(profilePicture);
   const [isUploading, setIsUploading] = useState(false);
-  const axiosBaseURL = "http://localhost:4000/api";
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api";
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),

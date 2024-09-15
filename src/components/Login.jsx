@@ -13,7 +13,7 @@ import { setLoggedIn, setToken, setSwipedIn } from "../Slices/AuthSlice";
 import { setEmployee } from "../Slices/EmployeeSlice";
 
 const Login = () => {
-  const axiosBaseURL = "http://localhost:4000/api";
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api";
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

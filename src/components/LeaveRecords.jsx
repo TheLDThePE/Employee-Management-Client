@@ -6,7 +6,7 @@ const LeaveRecords = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(5); // Number of records per page
   const [loading, setLoading] = useState(true); // Loading state
-  const axiosBaseURL = "http://localhost:4000/api";
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api";
 
   // Fetch leave records
   const fetchLeaveRecords = async () => {

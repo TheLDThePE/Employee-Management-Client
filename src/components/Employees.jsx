@@ -7,7 +7,7 @@ const Employees = () => {
   const [employeesPerPage] = useState(3); // Number of employees per page
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all"); // Filter for role
-  const axiosBaseURL = "http://localhost:4000/api";
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api";
 
   const fetchEmployees = async () => {
     try {

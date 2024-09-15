@@ -5,12 +5,13 @@ import axios from "axios";
 const Projects = ({ employeeId }) => {
   const [projects, setProjects] = useState([]); // Set initial state to null
   const [loading, setLoading] = useState(true); // Add a loading state
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api"
 
   // Fetch project data for the specific employee
   const fetchProjects = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/user/project/getemployeeprojects`,
+        `${axiosBaseURL}/user/project/getemployeeprojects`,
         {
           headers: {
             authorization: `Bearer ${localStorage.getItem("authToken")}`,

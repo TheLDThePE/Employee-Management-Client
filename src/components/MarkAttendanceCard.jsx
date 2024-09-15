@@ -11,7 +11,7 @@ const MarkAttendanceCard = () => {
   const [totalTime, setToatalTime] = useState(
     localStorage.getItem("totalTime")
   );
-  const axiosBaseURL = "http://localhost:4000/api";
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api";
   const options = {
     headers: {
       authorization: `Bearer ${localStorage.getItem("authToken")}`,

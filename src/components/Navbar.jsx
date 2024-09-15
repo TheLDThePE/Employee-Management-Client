@@ -21,7 +21,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profilePicture = useSelector((state) => state.employee.profilePicture);
-  const axiosBaseURL = "http://localhost:4000/api"
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api"
 
   const handleLogout = () => {
     dispatch(setLoggedIn(false));

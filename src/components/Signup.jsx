@@ -9,7 +9,7 @@ import axios from "axios";
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
-  const axiosBaseURL = "http://localhost:4000/api";
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api";
   const initialValues = {
     username: "",
     email: "",

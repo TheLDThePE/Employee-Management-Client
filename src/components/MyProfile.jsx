@@ -198,7 +198,7 @@ const EmployeeForm = () => {
           },
         };
         const response = await axios.get(
-          `${axiosBaseURL}user/getemployee`,
+          `${axiosBaseURL}/user/getemployee`,
           options
         );
         console.log(response.data.user);

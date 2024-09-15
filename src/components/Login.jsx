@@ -61,7 +61,7 @@ const Login = () => {
         },
       };
       const response = await axios.get(
-        `http://localhost:4000/api/user/getemployee`,
+        `${axiosBaseURL}/user/getemployee`,
         options
       );
       dispatch(setEmployee(response.data.employee));

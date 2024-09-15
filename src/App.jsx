@@ -4,7 +4,7 @@ import "./App.css";
 import ApplyLeave from "./components/ApplyLeave.jsx";
 import Attendance from "./components/Attendance.jsx";
 import Auth from "./components/Auth.jsx";
-import Dashboard from "./components/dashboard.jsx";
+import Dashboard from "./components/Dashboard.jsx";
 import Employees from "./components/Employees.jsx";
 import LeaveRecords from "./components/LeaveRecords.jsx";
 import Projects from "./components/Projects.jsx";

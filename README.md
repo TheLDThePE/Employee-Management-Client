@@ -35,8 +35,10 @@ This project interacts with a backend server deployed on Render. Below are the M
   - GET /api/user/getprofilepicture: Fetch the profile picture of the logged-in user.
 - **Attendance Management**:
   - POST /api/user/attendance/attendancerecord: Get attendance records.
+  - POST /api/user/attendance/toggleswipestatus: marks attendance for the user (toggles active state of the user in the site)
 - **Leave Management**:
   - GET /api/user/leave: Fetch leave records for the logged-in user.
+  - POST /api/user/applyleave: Apply leave for the user with provided details
 
 
 You can visit the deployed website [here](https://employee-management-dashboard-dev-it.netlify.app)

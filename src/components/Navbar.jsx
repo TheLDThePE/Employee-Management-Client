@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Styles/Navbar.css";
 import profileIcon from "../assets/profile-image.png";
 import profile24 from "../assets/profileIcon-24.png";
@@ -14,14 +14,18 @@ import hamIcon from "../assets/hamburger-icon.png";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoggedIn, setToken } from "../Slices/AuthSlice";
-import { setProfilePicture } from "../Slices/EmployeeSlice";
+import { setEmployee, setProfilePicture } from "../Slices/EmployeeSlice";
 import axios from "axios";
+import MyScaleLoader from "./Loaders/ScaleLoader.jsx";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const profilePicture = useSelector((state) => state.employee.profilePicture);
-  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api"
+  const employee = useSelector((state) => state.employee.employee);
+  const axiosBaseURL =
+    "https://employee-management-server-f7k2.onrender.com/api";
 
   const handleLogout = () => {
     dispatch(setLoggedIn(false));
@@ -34,44 +38,73 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    const fetchProfilePicture = async () => {
+    // Fetch employee details and profile picture when the component mounts
+    const fetchEmployeeDetails = async () => {
       try {
         const options = {
           headers: {
             authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-          responseType: "blob",
         };
 
-        const response = await axios.get(
-          `${axiosBaseURL}/user/getprofilepicture`,
+        // Fetch employee details
+        const employeeResponse = await axios.get(
+          `${axiosBaseURL}/user/getemployee`,
           options
         );
+        dispatch(setEmployee(employeeResponse.data.user));
+        console.log(employeeResponse.data.user);
 
-        // Log response data to check if it's a Blob
-        console.log("Response data:", response.data);
-        console.log("Is Blob:", response.data instanceof Blob); // Check if it is a Blob
+        // Fetch profile picture
+        const profileResponse = await axios.get(
+          `${axiosBaseURL}/user/getprofilepicture`,
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+            responseType: "blob",
+          }
+        );
 
-        if (response.data instanceof Blob) {
-          const imageUrl = URL.createObjectURL(response.data);
+        if (profileResponse.data instanceof Blob) {
+          const imageUrl = URL.createObjectURL(profileResponse.data);
           dispatch(setProfilePicture(imageUrl));
-        } else {
-          console.error("Error: Response is not a Blob");
         }
+
+        // Stop loading after fetching data
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching profile picture:", error);
+        console.error(
+          "Error fetching employee details or profile picture:",
+          error
+        );
+        setLoading(false);
       }
     };
-    fetchProfilePicture();
 
-    // Cleanup function to revoke the object URL
-    console.log(profilePicture);
+    if (localStorage.getItem("authToken")) {
+      fetchEmployeeDetails();
+    } else {
+      setLoading(false); // Stop loading if not authenticated
+    }
+
     return () => {
       if (profilePicture) {
         URL.revokeObjectURL(profilePicture);
       }
     };
   }, [dispatch]);
+
+  if (loading) {
+    return (
+      // Show a loading indicator while fetching data
+      <>
+        <div className="col-12 text-center">
+          <MyScaleLoader />
+        </div>
+      </>
+    );
+  }
 
   return (
     <nav className="navbar bg-body-tertiary sticky-top">
@@ -89,14 +122,25 @@ const Navbar = () => {
           </span>
         </button>
         <div className="d-flex align-items-center justify-content-center">
-          <div className="btn me-3 fs-5" onClick={handleLogout}>
-            Logout
-          </div>
-          <Link className="navbar-brand" to="/myprofile">
+          <Link
+            className="navbar-brand d-flex align-items-center justify-content-around gap-3"
+            to="/myprofile"
+          >
             <div className="profile-icon">
-              <img src={profileIcon} alt="" className={setProfilePicture} />
+              <img
+                src={profilePicture || profileIcon}
+                alt=""
+                className="nav-profile-picture"
+              />
+            </div>
+            <div className="d-flex flex-column">
+              <span>{employee.name}</span>
+              <span className="fs-6 muted">{employee.designation}</span>
             </div>
           </Link>
+          <div className="btn me-3 fs-5" onClick={handleLogout}>
+            <img src={logoutIcon} alt="" /> Logout
+          </div>
         </div>
         <div
           className="offcanvas offcanvas-end"

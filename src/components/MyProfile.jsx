@@ -39,6 +39,7 @@ const EmployeeForm = () => {
       country: Yup.string().nullable(),
     }),
     role: Yup.string().oneOf(["employee", "admin"], "Invalid role"),
+    designation: Yup.string().nullable(),
   });
 
   const handleFormSubmit = async (values, { setSubmitting }) => {
@@ -55,6 +56,7 @@ const EmployeeForm = () => {
             state: values.address.state,
             country: values.address.country,
           },
+          designation: values.designation
         },
       };
       const response = await axios.post(
@@ -214,8 +216,7 @@ const EmployeeForm = () => {
   }, [dispatch, editing, isUploading]);
 
   return (
-    <div className="container">
-      <h2>Edit Employee</h2>
+    <div className="container my-5">
       <div className="container d-flex gap-3 flex-column flex-md-row align-items-center align-items-md-start justify-content-start">
         <form
           onSubmit={handleImageUpload}
@@ -255,6 +256,7 @@ const EmployeeForm = () => {
                 state: employee?.address?.state || "",
                 country: employee?.address?.country || "",
               },
+              designation: employee?.designation || "",
             }}
             validationSchema={validationSchema}
             onSubmit={handleFormSubmit}
@@ -342,6 +344,20 @@ const EmployeeForm = () => {
                   />
                   <ErrorMessage
                     name="address.country"
+                    component="div"
+                    className="text-danger"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="country">Designation</label>
+                  <Field
+                    type="text"
+                    name="designation"
+                    className="form-control"
+                  />
+                  <ErrorMessage
+                    name="designation"
                     component="div"
                     className="text-danger"
                   />

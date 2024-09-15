@@ -35,8 +35,7 @@ const Displaycards = () => {
   }, []);
 
   return (
-    <div className="container-fluid">
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3 m-2">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 m-2">
         <div className="col">
           <div className="card h-100 py-4 display-card-border display-card-green">
             <div className="d-flex justify-content-between align-items-center">
@@ -92,7 +91,6 @@ const Displaycards = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

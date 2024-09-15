@@ -12,7 +12,7 @@ const authSlice = createSlice({
     setLoggedIn: (state, action) => {
       state.loggedIn = action.payload;
     },
-    setSwipedIn: () => {
+    setSwipedIn: (state,action) => {
       state.swipedIn = action.payload;
     },
     setToken: (state, action) => {

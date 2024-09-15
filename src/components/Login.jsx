@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import React, { useState } from "react";
@@ -65,7 +66,7 @@ const Login = () => {
         options
       );
       dispatch(setEmployee(response.data.employee));
-      console.log(employee);
+      console.log(response.data.employee);
     } catch (error) {
       console.error("Error fetching employee:", error);
     }

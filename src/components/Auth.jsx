@@ -9,7 +9,7 @@ import "../components/Styles/Auth.css";
 const Auth = () => {
   const [action, setAction] = useState("Login");
   const [animate, setAnimate] = useState("slide-in");
-  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com/api"
+  const axiosBaseURL = "https://employee-management-server-f7k2.onrender.com"
   const firstFetch = async () => {
     const res = await axios.get(`${axiosBaseURL}/`);
     console.log(res.data.message);

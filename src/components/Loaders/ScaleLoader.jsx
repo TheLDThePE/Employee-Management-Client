@@ -1,7 +1,7 @@
 import React from "react";
 import { ScaleLoader } from "react-spinners";
 
-const ScaleLoader = () => {
+const MyScaleLoader = () => {
   return (
     <>
       <ScaleLoader
@@ -18,4 +18,4 @@ const ScaleLoader = () => {
   );
 };
 
-export default ScaleLoader;
+export default MyScaleLoader;
